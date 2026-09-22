@@ -6,15 +6,35 @@ var builder = WebApplication.CreateBuilder(args);
 // Controllers
 builder.Services.AddControllers();
 
-// PostgreSQL DbContext
+/*
+ *
+ For Support only PostgreSQL DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
-);
+);*/
+
+var databaseProvider = builder.Configuration["DatabaseProvider"];
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    if (databaseProvider == "PostgreSql")
+    {
+        options.UseNpgsql(
+            builder.Configuration.GetConnectionString("PostgreSql")
+        );
+    }
+    else
+    {
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString("SqlServer")
+        );
+    }
+});
 
 /*
-// CORS for Angular
+// CORS for only Local Angular Project
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
@@ -27,6 +47,7 @@ builder.Services.AddCors(options =>
 
 
 /*
+CORS for only Local Angular and React
 
 builder.Services.AddCors(options =>
 {
@@ -38,6 +59,7 @@ builder.Services.AddCors(options =>
     });
 });*/
 
+// CORS For Server react
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactApp", policy =>
@@ -48,7 +70,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-app.UseCors("ReactApp");
+
 
 var app = builder.Build();
 
@@ -56,6 +78,8 @@ app.UseHttpsRedirection();
 
 //app.UseCors("AllowAngular");
 //app.UseCors("AngularApp");
+
+app.UseCors("ReactApp");
 
 app.MapControllers();
 
