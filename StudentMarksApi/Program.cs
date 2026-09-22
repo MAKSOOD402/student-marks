@@ -25,6 +25,9 @@ builder.Services.AddCors(options =>
     });
 });*/
 
+
+/*
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularApp", policy =>
@@ -33,13 +36,26 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
+});*/
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactApp", policy =>
+    {
+        policy.WithOrigins("https://your-site.azurestaticapps.net")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
+
+app.UseCors("ReactApp");
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 
 //app.UseCors("AllowAngular");
-app.UseCors("AngularApp");
+//app.UseCors("AngularApp");
 
 app.MapControllers();
 
