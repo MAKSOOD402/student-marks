@@ -26,5 +26,5 @@ steps:
     dotnet restore
     dotnet build --configuration Release --no-restore
     dotnet test --configuration Release --no-build
-  workingDirectory: backend
+  workingDirectory: StudentMarksApi
   displayName: 'Build and test ASP.NET application'
