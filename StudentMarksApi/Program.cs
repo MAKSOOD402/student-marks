@@ -15,7 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     )
 );*/
 
-var databaseProvider = builder.Configuration["DatabaseProvider"];
+var databaseProvider = builder.Configuration["name"];
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
