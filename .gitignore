@@ -1,0 +1,11 @@
+.vs/ 
+node_modules/ 
+bin/ 
+obj/ 
+dist/ 
+build/ 
+.env/ 
+.env*/ 
+.*csproj.user 
+StudentMarksApi/appsettings.json 
+StudentMarksApi/appsettings.Development.json 
