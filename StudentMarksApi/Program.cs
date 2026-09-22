@@ -15,14 +15,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     )
 );*/
 
-var databaseProvider = builder.Configuration["name"];
+var databaseProvider = builder.Configuration["DatabaseProvoider"];
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    if (databaseProvider == "PostgreSql")
+    if (databaseProvider == "PostgreSQL")
     {
         options.UseNpgsql(
-            builder.Configuration.GetConnectionString("PostgreSql")
+            builder.Configuration.GetConnectionString("PostgreSQL")
         );
     }
     else
