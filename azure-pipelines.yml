@@ -1,0 +1,30 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm ci
+    npm run build
+  workingDirectory: frontend
+  displayName: 'Build React application'
+
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'
+  displayName: 'Install .NET SDK'
+
+- script: |
+    dotnet restore
+    dotnet build --configuration Release --no-restore
+    dotnet test --configuration Release --no-build
+  workingDirectory: backend
+  displayName: 'Build and test ASP.NET application'
