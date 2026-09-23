@@ -39,7 +39,7 @@ public class StudentMarkController : ControllerBase
     public async Task<ActionResult<IEnumerable<StudentMark>>> GetAll()
     {
         var studentMarks = await _context.StudentMarks
-            .FromSqlRaw("SELECT * FROM dbo.get_all_student_marks()")
+            .FromSqlRaw("SELECT * FROM dbo.StudentMarks")
             .AsNoTracking()
             .ToListAsync();
 
