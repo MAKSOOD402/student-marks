@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import './App.css';
 
-const API_URL = 'http://studentmarks-api-dgfrfderbmcpbegk.southindia-01.azurewebsites.net/api/StudentMark';
+const API_URL = 'https://studentmarks-api-dgfrfderbmcpbegk.southindia-01.azurewebsites.net/api/StudentMark';
 
 export default function App() {
   const [students, setStudents] = useState([]);
