@@ -74,6 +74,6 @@ steps:
     azureSubscription: 'StudentMarks-Azure'
     appType: 'webApp'
     appName: 'studentmarks-api'
-    resourceGroupName: 'studnetmarks-rg'
+    resourceGroupName: 'studentmarks-rg'
     package: '$(Build.ArtifactStagingDirectory)/StudentMarksApi.zip'
   displayName: 'Deploy ASP.NET API to Azure'
