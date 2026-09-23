@@ -64,7 +64,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactApp", policy =>
     {
-        policy.WithOrigins("https://your-site.azurestaticapps.net")
+        policy.WithOrigins("https://lively-river-03fbf9310.6.azurestaticapps.net")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
