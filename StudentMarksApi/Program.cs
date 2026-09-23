@@ -76,11 +76,11 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-//app.UseCors("AllowAngular");
-//app.UseCors("AngularApp");
 
 app.UseCors("ReactApp");
 
+//app.UseCors("AllowAngular");
+//app.UseCors("AngularApp");
 app.MapControllers();
 
 app.Run();
