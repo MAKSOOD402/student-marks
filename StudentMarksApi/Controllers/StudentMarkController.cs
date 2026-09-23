@@ -22,8 +22,8 @@ public class StudentMarkController : ControllerBase
     public async Task<ActionResult<StudentMark>> GetById(int id)
     {
         var studentMark = await _context.StudentMarks
-    .FromSqlInterpolated(
-        $"SELECT * FROM get_student_marks_by_id({id})")
+    .FromSqlRaw(
+        $"SELECT * FROM dbo.get_student_marks_by_id({id})")
     .AsNoTracking()
     .FirstOrDefaultAsync();
 
@@ -39,36 +39,22 @@ public class StudentMarkController : ControllerBase
     public async Task<ActionResult<IEnumerable<StudentMark>>> GetAll()
     {
         var studentMarks = await _context.StudentMarks
-            .FromSqlRaw("SELECT * FROM public.get_all_student_marks()")
+            .FromSqlRaw("SELECT * FROM dbo.get_all_student_marks()")
             .AsNoTracking()
             .ToListAsync();
 
         return Ok(studentMarks);
     }
-    /*
-    // POST: api/student-marks
-    [HttpPost]
-    public async Task<ActionResult<StudentMark>> Create(StudentMark student)
-    {
-        _context.StudentMarks.Add(student);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = student.id },
-            student
-        );
-    }*/
+  
 
     [HttpPost]
     public async Task<IActionResult> Insert(StudentMark studentMark)
     {
         await _context.Database.ExecuteSqlInterpolatedAsync($"""
-        CALL public.insert_student_marks(
-            {studentMark.name},
-            {studentMark.subject},
-            {studentMark.marks}
-        )
+        EXEC dbo.insert_student_marks
+            @p_name={studentMark.name},
+            @p_subject={studentMark.subject},
+            @p_marks={studentMark.marks}
         """);
 
         return Ok("Student mark inserted successfully.");
@@ -78,10 +64,9 @@ public class StudentMarkController : ControllerBase
     public async Task<IActionResult> UpdateMarks(int id, int marks)
     {
         await _context.Database.ExecuteSqlInterpolatedAsync($"""
-        CALL public.update_student_marks(
-            {id},
-            {marks}
-        )
+        EXEC dbo.update_student_marks
+            @p_id={id},
+            @p_marks={marks}
         """);
 
         return Ok("Student mark updated successfully.");
@@ -93,9 +78,8 @@ public class StudentMarkController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         await _context.Database.ExecuteSqlInterpolatedAsync($"""
-        CALL public.delete_student_marks(
-            {id}
-        )
+        EXEC dbo.delete_student_marks
+           @p_id={id}
         """);
 
         return Ok(new { message = "Student record deleted successfully." });
