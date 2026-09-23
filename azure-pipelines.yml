@@ -5,6 +5,10 @@ pool:
   vmImage: ubuntu-24.04
 
 steps:
+
+# =========================
+# React Build
+# =========================
 - task: NodeTool@0
   inputs:
     versionSpec: '20.x'
@@ -16,15 +20,59 @@ steps:
   workingDirectory: student-marks-react
   displayName: 'Build React application'
 
+
+# =========================
+# .NET SDK
+# =========================
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
     version: '8.x'
   displayName: 'Install .NET SDK'
 
+
+# =========================
+# Build & Test ASP.NET API
+# =========================
 - script: |
     dotnet restore
     dotnet build --configuration Release --no-restore
     dotnet test --configuration Release --no-build
   workingDirectory: StudentMarksApi
-  displayName: 'Build and test ASP.NET application'
+  displayName: 'Build and test ASP.NET API'
+
+
+# =========================
+# Publish ASP.NET API
+# =========================
+- script: |
+    dotnet publish StudentMarksApi.csproj \
+      --configuration Release \
+      --output $(Build.ArtifactStagingDirectory)/api
+  workingDirectory: StudentMarksApi
+  displayName: 'Publish ASP.NET API'
+
+
+# =========================
+# Create ZIP
+# =========================
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/api'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/StudentMarksApi.zip'
+    replaceExistingArchive: true
+  displayName: 'Archive ASP.NET API'
+
+
+# =========================
+# Deploy to Azure App Service
+# =========================
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'StudentMarks-Azure'
+    appType: 'webApp'
+    appName: 'studentmarks-api'
+    package: '$(Build.ArtifactStagingDirectory)/StudentMarksApi.zip'
+  displayName: 'Deploy ASP.NET API to Azure'
