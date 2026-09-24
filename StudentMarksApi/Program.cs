@@ -18,8 +18,8 @@ try
         )
     );*/
 
-    var databaseProvider = builder.Configuration["DatabaseProvoider"];
-    Console.WriteLine($"DatabaseProvoider:{databaseProvider}");
+    var databaseProvider = builder.Configuration["DatabaseProvider"];
+    Console.WriteLine($"DatabaseProvider:{databaseProvider}");
 
 
     var SqlConnectionString = builder.Configuration.GetConnectionString("SqlServer");
