@@ -52,7 +52,9 @@ steps:
   workingDirectory: StudentMarksApi
   displayName: 'Publish ASP.NET API'
 
-
+- script: |
+    powershell -Command "(Get-Content '$(Build.ArtifactStagingDirectory)/api/web.config') -replace 'stdoutLogEnabled=\"false\"', 'stdoutLogEnabled=\"true\"' -replace 'stdoutLogFile=\"[^\"]*\"', 'stdoutLogFile=\"\\?\%home%\LogFiles\stdout\"' | Set-Content '$(Build.ArtifactStagingDirectory)/api/web.config'"
+  displayName: 'Enable ASP.NET startup logging'
 # =========================
 # Create ZIP
 # =========================
