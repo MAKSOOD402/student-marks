@@ -38,11 +38,12 @@ public class StudentMarkController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<StudentMark>>> GetAll()
     {
+        Console.WriteLine("GetAll invoked");
         var studentMarks = await _context.StudentMarks
             .FromSqlRaw("SELECT * FROM dbo.StudentMarks")
             .AsNoTracking()
             .ToListAsync();
-
+        Console.WriteLine($"Query completed count:{studentMarks.Count}");
         return Ok(studentMarks);
     }
   

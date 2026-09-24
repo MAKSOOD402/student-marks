@@ -16,21 +16,29 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );*/
 
 var databaseProvider = builder.Configuration["DatabaseProvoider"];
+Console.WriteLine($"DatabaseProvoider:{databaseProvider}");
 
+
+var SqlConnectionString = builder.Configuration.GetConnectionString("SqlServer");
+Console.WriteLine($"Sql Server connection string exists:{!string.IsNullOrEmpty(SqlConnectionString)}");
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
+   
     if (databaseProvider == "PostgreSQL")
     {
+        Console.WriteLine("Using PostGre SERVER");
         options.UseNpgsql(
             builder.Configuration.GetConnectionString("PostgreSQL")
         );
     }
     else
     {
+        Console.WriteLine("Using SQL SERVER");
         options.UseSqlServer(
             builder.Configuration.GetConnectionString("SqlServer")
         );
     }
+   
 });
 
 /*
@@ -78,7 +86,7 @@ app.UseHttpsRedirection();
 
 
 app.UseCors("ReactApp");
-
+Console.WriteLine("CORS configuered");
 //app.UseCors("AllowAngular");
 //app.UseCors("AngularApp");
 app.MapControllers();
