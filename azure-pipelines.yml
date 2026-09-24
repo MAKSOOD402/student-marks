@@ -2,49 +2,51 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-24.04
+  vmImage: 'ubuntu-latest'
 
 steps:
 
 # =========================
-# React Build
+# React UI
 # =========================
+
 - task: NodeTool@0
   inputs:
     versionSpec: '20.x'
   displayName: 'Install Node.js'
 
 - script: |
-    npm ci
+    npm install
     npm run build
   workingDirectory: student-marks-react
-  displayName: 'Build React application'
+  displayName: 'Build React UI'
 
 
 # =========================
-# .NET SDK
+# .NET 10 API
 # =========================
+
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
     version: '10.x'
-  displayName: 'Install .NET SDK'
+  displayName: 'Install .NET 10 SDK'
 
-
-# =========================
-# Build & Test ASP.NET API
-# =========================
 - script: |
     dotnet restore
+  workingDirectory: StudentMarksApi
+  displayName: 'Restore ASP.NET API'
+
+- script: |
     dotnet build --configuration Release --no-restore
+  workingDirectory: StudentMarksApi
+  displayName: 'Build ASP.NET API'
+
+- script: |
     dotnet test --configuration Release --no-build
   workingDirectory: StudentMarksApi
-  displayName: 'Build and test ASP.NET API'
+  displayName: 'Test ASP.NET API'
 
-
-# =========================
-# Publish ASP.NET API
-# =========================
 - script: |
     dotnet publish StudentMarksApi.csproj \
       --configuration Release \
@@ -52,12 +54,31 @@ steps:
   workingDirectory: StudentMarksApi
   displayName: 'Publish ASP.NET API'
 
-- script: |
-    powershell -Command "(Get-Content '$(Build.ArtifactStagingDirectory)/api/web.config') -replace 'stdoutLogEnabled=\"false\"', 'stdoutLogEnabled=\"true\"' -replace 'stdoutLogFile=\"[^\"]*\"', 'stdoutLogFile=\"\\?\%home%\LogFiles\stdout\"' | Set-Content '$(Build.ArtifactStagingDirectory)/api/web.config'"
+
+# =========================
+# Enable ASP.NET startup logging
+# =========================
+
+- pwsh: |
+    $path = "$(Build.ArtifactStagingDirectory)/api/web.config"
+
+    $content = Get-Content $path -Raw
+
+    $content = $content -replace 'stdoutLogEnabled="false"', 'stdoutLogEnabled="true"'
+
+    $content = $content -replace 'stdoutLogFile="[^"]*"', 'stdoutLogFile="\\?\%home%\LogFiles\stdout"'
+
+    Set-Content -Path $path -Value $content
+
+    Write-Host "Updated web.config:"
+    Get-Content $path
   displayName: 'Enable ASP.NET startup logging'
+
+
 # =========================
-# Create ZIP
+# Create deployment ZIP
 # =========================
+
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/api'
@@ -69,8 +90,9 @@ steps:
 
 
 # =========================
-# Deploy to Azure App Service
+# Deploy API to Azure App Service
 # =========================
+
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'StudentMarks-Azure'
